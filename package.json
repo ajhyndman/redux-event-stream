@@ -5,5 +5,19 @@
   "main": "index.js",
   "repository": "https://github.com/ajhyndman/redux-event-stream.git",
   "author": "Andrew Hyndman <ajhyndman@hotmail.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "scripts": {
+    "build": "babel src --out-dir dist"
+  },
+  "dependencies": {
+    "redux": "^3.7.2"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.24.1",
+    "babel-plugin-transform-flow-strip-types": "^6.22.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-stage-2": "^6.24.1",
+    "eslint-config-ajhyndman": "git+https://github.com/ajhyndman/eslint-config-ajhyndman#1.2.0",
+    "flow-bin": "^0.50.0"
+  }
 }
