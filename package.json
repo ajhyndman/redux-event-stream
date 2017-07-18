@@ -1,0 +1,9 @@
+{
+  "name": "redux-event-stream",
+  "version": "0.1.0",
+  "description": "A thin wrapper around Redux that exposes an API inspired by Event Sourcing",
+  "main": "index.js",
+  "repository": "https://github.com/ajhyndman/redux-event-stream.git",
+  "author": "Andrew Hyndman <ajhyndman@hotmail.com>",
+  "license": "MIT"
+}
