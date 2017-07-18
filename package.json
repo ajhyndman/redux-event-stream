@@ -9,7 +9,7 @@
   "scripts": {
     "build": "babel src --out-dir dist",
     "copy-types": "cp src/index.flow.js dist/index.flow.js",
-    "prepublish": "yarn build && copy-types"
+    "prepublish": "yarn build && yarn copy-types"
   },
   "dependencies": {
     "redux": "^3.7.2"
