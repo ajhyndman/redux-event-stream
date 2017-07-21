@@ -11,7 +11,7 @@ export type EventStream = {
 export type Projection<T> = {
   getState: () => T,
   // mimic redux subscribe: this just tells you if the projection has changed
-  subscribe: () => void,
+  subscribe: (subscriber: () => void) => void,
 };
 
 export function createEventStream(commands: {
