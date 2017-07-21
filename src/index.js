@@ -1,5 +1,5 @@
 // @flow
-import { createStore, applyMiddleware } from "redux";
+import { createStore, applyMiddleware } from 'redux';
 
 export type Event = { type: string };
 export type Command = () => Event;
