@@ -1,9 +1,9 @@
 // @flow
 import { createStore, applyMiddleware } from 'redux';
+import { identity, map } from 'ramda';
 
 export type Event = { type: string };
 export type Command = () => Event;
-
 export type EventStream = {
   subscribe: (subscriber: (event: Event) => void) => void,
   [string]: Command,
@@ -13,10 +13,6 @@ export type Projection<T> = {
   // mimic redux subscribe: this just tells you if the projection has changed
   subscribe: () => void,
 };
-
-function identity(a) {
-  return a;
-}
 
 export function createEventStream(commands: {
   [string]: Command,
@@ -29,7 +25,7 @@ export function createEventStream(commands: {
     });
   };
 
-  createStore(
+  const store = createStore(
     identity,
     applyMiddleware(
       (/*{ getState, dispatch }*/) => (/*next*/) => event =>
@@ -38,7 +34,7 @@ export function createEventStream(commands: {
   );
 
   return {
-    ...commands,
+    ...map(command => (...args) => store.dispatch(command(...args)), commands),
     subscribe: subscriber => {
       subscribers.push(subscriber);
     },
