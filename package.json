@@ -6,6 +6,9 @@
   "repository": "https://github.com/ajhyndman/redux-event-stream.git",
   "author": "Andrew Hyndman <ajhyndman@hotmail.com>",
   "license": "MIT",
+  "jest": {
+    "timers": "fake"
+  },
   "scripts": {
     "build": "babel src/index.js --out-dir dist",
     "copy-types": "cp src/index.flow.js dist/index.flow.js",
