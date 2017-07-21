@@ -6,12 +6,12 @@ export type Command = () => Event;
 
 export type EventStream = {
   subscribe: (subscriber: (event: Event) => void) => void,
-  [string]: Command
+  [string]: Command,
 };
 export type Projection<T> = {
   getState: () => T,
   // mimic redux subscribe: this just tells you if the projection has changed
-  subscribe: () => void
+  subscribe: () => void,
 };
 
 function identity(a) {
@@ -19,7 +19,7 @@ function identity(a) {
 }
 
 export function createEventStream(commands: {
-  [string]: Command
+  [string]: Command,
 }): EventStream {
   let subscribers = [];
   const eventListener = event => {
@@ -33,22 +33,22 @@ export function createEventStream(commands: {
     identity,
     applyMiddleware(
       (/*{ getState, dispatch }*/) => (/*next*/) => event =>
-        eventListener(event)
-    )
+        eventListener(event),
+    ),
   );
 
   return {
     ...commands,
     subscribe: subscriber => {
       subscribers.push(subscriber);
-    }
+    },
   };
 }
 
 export function createProjection<T>(
   eventStream: EventStream,
   reducer: (state: T, event: Event) => T,
-  init?: T
+  init?: T,
 ): Projection<T> {
   const store = createStore(reducer, init);
 
@@ -56,6 +56,6 @@ export function createProjection<T>(
 
   return {
     getState: store.getState,
-    subscribe: store.subscribe
+    subscribe: store.subscribe,
   };
 }
