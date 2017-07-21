@@ -13,7 +13,8 @@
     "build": "babel src/index.js --out-file dist/index.js",
     "copy-types": "cp src/index.flow.js dist/index.flow.js",
     "prepublish": "yarn build && yarn copy-types",
-    "tape": "tape -r babel-register src/**/test.js"
+    "jest": "jest",
+    "jest:watch": "jest --watch"
   },
   "dependencies": {
     "ramda": "^0.24.1",
