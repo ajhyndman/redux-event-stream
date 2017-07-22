@@ -1,3 +1,7 @@
 {
-  "extends": ["ajhyndman"]
+  "extends": ["ajhyndman"],
+  "rules": {
+    "no-undef": ["off"],
+    "require-yield": ["off"]
+  }
 }

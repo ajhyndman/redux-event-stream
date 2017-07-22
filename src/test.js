@@ -1,6 +1,6 @@
 // @flow
 /* eslint-env jest */
-import { identity } from 'ramda';
+import { identity, reduce } from 'ramda';
 
 import { createEventStream, createProjection } from './index.js';
 
@@ -90,5 +90,117 @@ describe('createProjection', () => {
     eventStream.increment();
     eventStream.increment();
     expect(subscriber).toHaveBeenCalledTimes(3);
+  });
+});
+
+describe('generator playground', () => {
+  function* range(max) {
+    for (let i = 0; i < max; i += 1) {
+      yield i;
+    }
+  }
+
+  test('simple generator works', () => {
+    const myRange = range(4);
+    expect(myRange.next()).toEqual({ done: false, value: 0 });
+    expect(myRange.next()).toEqual({ done: false, value: 1 });
+    expect(myRange.next()).toEqual({ done: false, value: 2 });
+    expect(myRange.next()).toEqual({ done: false, value: 3 });
+    expect(myRange.next()).toEqual({ done: true, value: undefined });
+  });
+
+  test('ramda reduce works on generators', () => {
+    const myRange = range(4);
+    const mapGeneratorToArray = reduce((acc, next) => {
+      return acc.concat([next]);
+    }, []);
+
+    const myRangeDoubled = mapGeneratorToArray(myRange);
+    expect(myRangeDoubled).toEqual([0, 1, 2, 3]);
+  });
+
+  test('consGenerator', () => {
+    function consGenerator(value: *, generator?: Generator<*, *, *>) {
+      if (generator === undefined) {
+        return (function*() {
+          yield value;
+        })();
+      }
+      const x = generator;
+      return (function*() {
+        yield value;
+        yield* x;
+      })();
+    }
+
+    const one = consGenerator(1);
+    expect(one.next()).toEqual({ done: false, value: 1 });
+    expect(one.next()).toEqual({ done: true, value: undefined });
+
+    const oneTwo = consGenerator(1, consGenerator(2));
+    expect(oneTwo.next()).toEqual({ done: false, value: 1 });
+    expect(oneTwo.next()).toEqual({ done: false, value: 2 });
+    expect(oneTwo.next()).toEqual({ done: true, value: undefined });
+
+    expect([...consGenerator(1, consGenerator(2))]).toEqual([1, 2]);
+
+    expect([...consGenerator(-1, range(4))]).toEqual([-1, 0, 1, 2, 3]);
+  });
+
+  test('concatGenerator', () => {
+    function concatGenerator(
+      generator1: Generator<*, *, *>,
+      generator2: Generator<*, *, *>,
+    ) {
+      return (function*() {
+        yield* generator1;
+        yield* generator2;
+      })();
+    }
+
+    expect([...concatGenerator(range(2), range(2))]).toEqual([0, 1, 0, 1]);
+  });
+
+  test('ramda reduce can produce a generator', () => {
+    function consGenerator(value: *, generator?: Generator<*, *, *>) {
+      if (generator === undefined) {
+        return (function*() {
+          yield value;
+          return;
+        })();
+      }
+      const x = generator;
+      return (function*() {
+        yield value;
+        yield* x;
+      })();
+    }
+
+    function concatGenerator(
+      generator1: Generator<*, *, *>,
+      generator2: Generator<*, *, *>,
+    ) {
+      return (function*() {
+        yield* generator1;
+        yield* generator2;
+      })();
+    }
+
+    const mapGenerator = (mapFunction, generator) => {
+      return reduce(
+        (acc, next) => concatGenerator(acc, consGenerator(mapFunction(next))),
+        (function*() {
+          return;
+        })(),
+        generator,
+      );
+    };
+
+    const myRange = range(4);
+    expect([...myRange]).toEqual([0, 1, 2, 3]);
+
+    const myRangeDoubled = mapGenerator(a => a * 2, range(4));
+    expect(myRangeDoubled).not.toEqual([0, 2, 4, 6]);
+    expect([...myRangeDoubled]).toEqual([0, 2, 4, 6]);
   });
 });
